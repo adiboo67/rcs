@@ -1,5 +1,6 @@
 (function () {
-  const { esc, attr, timer, waitingNote, avatar } = UI;
+  const { esc, attr, timer, waitingNote, avatar, cue } = UI;
+  const PHASE_SOUND = { roles: 'reveal', night: 'night', dawn: 'dawn', verdict: 'gavel', hunter: 'reveal', day: 'whistle', end: 'fanfare' };
 
   function targets(list, act, selected, extra) {
     return `<div class="names">${list.map(p => `<button class="btn ${selected === p.id ? 'selected' : ''}"
@@ -21,6 +22,7 @@
     const alive = v.players.filter(p => p.alive);
     const others = alive.filter(p => !p.me);
     let main = '';
+    if (PHASE_SOUND[v.phase]) cue(`lg-${v.phase}-${v.day}-${v.deadline}`, PHASE_SOUND[v.phase]);
 
     if (v.phase === 'roles') {
       main = `<div class="card blue banner"><div class="emoji">${v.me.emoji}</div><h2>Tu es ${esc(v.me.role)}</h2>

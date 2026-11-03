@@ -113,7 +113,8 @@ b, strong { font-weight: 700; }
   box-shadow: 0 0 0 2px rgba(255, 255, 255, .15), 0 0 18px rgba(34, 180, 245, .55);
 }
 .club { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; letter-spacing: .06em; text-transform: uppercase; line-height: 1; }
-.sub { font-size: .66rem; color: var(--muted); letter-spacing: .14em; text-transform: uppercase; font-weight: 700; margin-top: 3px; }
+.brand > div { min-width: 0; }
+.sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: .66rem; color: var(--muted); letter-spacing: .14em; text-transform: uppercase; font-weight: 700; margin-top: 3px; }
 #status { display: flex; align-items: center; gap: 6px; font-size: .85rem; }
 .chip {
   display: inline-flex; align-items: center; gap: 6px;
@@ -121,6 +122,8 @@ b, strong { font-weight: 700; }
   background: var(--surface-2); border: 1px solid var(--stroke-2);
   color: #fff; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums;
 }
+.chip.sound { cursor: pointer; padding: 5px 9px; font-size: .9rem; line-height: 1; font: inherit; }
+.chip.sound:active { transform: scale(.94); }
 .chip.score { background: linear-gradient(180deg, rgba(255, 201, 64, .22), rgba(255, 201, 64, .08)); border-color: rgba(255, 201, 64, .45); color: #ffe7a6; }
 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); display: inline-block; box-shadow: 0 0 0 3px rgba(43, 212, 125, .22), 0 0 10px var(--ok); }
 .dot.off { background: var(--bad); box-shadow: 0 0 0 3px rgba(255, 77, 94, .22); animation: blink 1s infinite; }
@@ -679,6 +682,9 @@ details.card > summary, .card.blue details > summary { color: #fff; }
 @media (min-width: 560px) {
   .games { grid-template-columns: 1fr 1fr; }
   .games .gtile.host { grid-column: 1 / -1; }
+}
+@media (max-width: 400px) {
+  .sub { display: none; }
 }
 @media (max-width: 380px) {
   h1 { font-size: 2rem; }

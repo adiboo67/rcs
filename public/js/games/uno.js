@@ -1,5 +1,5 @@
 (function () {
-  const { esc, attr, timer, ranking, avatar, Local, send } = UI;
+  const { esc, attr, timer, ranking, avatar, Local, send, cue } = UI;
   const SYMBOL = { skip: '⊘', rev: '⇄', '+2': '+2', wild: '★', '+4': '+4' };
   const COLOR_NAME = { r: 'Rouge', y: 'Jaune', g: 'Vert', b: 'Bleu' };
 
@@ -47,7 +47,11 @@
   }
 
   Games.uno = function (v, S) {
-    if (v.phase === 'results') return results(v, S);
+    if (v.phase === 'results') { cue(`uno-results-${v.round}-${v.isFinale ? 'f' : ''}`, 'fanfare'); return results(v, S); }
+    cue(`uno-top-${v.table}-${v.round}-${v.top.id}`, 'card');
+    if (v.myTurn) cue(`uno-turn-${v.deadline}`, 'turn');
+    if (v.myTurn && v.drawn != null) cue(`uno-draw-${v.deadline}-${v.drawn}`, 'draw');
+    if (v.winner) cue(`uno-win-${v.table}-${v.round}`, v.winner === S.me.name ? 'fanfare' : 'whistle');
     const strip = v.order.map(p => `<div class="pchip ${p.turn ? 'turn' : ''} ${p.me ? 'me' : ''}">
       ${avatar(p.name)}${esc(p.name)}${p.away ? ' 📵' : ''} <span class="n">${p.count}</span></div>`).join('');
     const dir = v.dir === 1 ? '↻' : '↺';

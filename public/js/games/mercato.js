@@ -1,5 +1,5 @@
 (function () {
-  const { esc, attr, timer, waitingNote, Local } = UI;
+  const { esc, attr, timer, waitingNote, Local, cue } = UI;
 
   Local.mercPick = d => { Local.mercLot = d.lot; };
 
@@ -35,6 +35,8 @@
         ${waitingNote(v.bidCount, v.managers, 'ont joué')}${squad(v)}`;
     }
 
+    if (v.phase === 'result') cue(`mc-res-${v.round}-${v.deadline}`, 'gavel');
+    if (v.phase === 'sim') cue(`mc-sim-${v.deadline}`, 'whistle');
     if (v.phase === 'result') {
       return `${head}<div class="card"><h3>Résultats des enchères</h3>${v.results.length ? `<ul class="list">${v.results.map(r => `<li>
         ${rating(r.rating)}<span class="grow"><b>${esc(r.player)}</b><br><span class="small muted">→ ${esc(r.buyer)} (${r.offers} offre${r.offers > 1 ? 's' : ''})</span></span>

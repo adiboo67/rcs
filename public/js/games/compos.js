@@ -1,5 +1,5 @@
 (function () {
-  const { esc, timer, waitingNote, ranking } = UI;
+  const { esc, timer, waitingNote, ranking, cue } = UI;
 
   Games.compos = function (v) {
     const guessing = v.phase === 'guess' && !v.done;
@@ -23,6 +23,7 @@
         : `<button class="btn primary block" data-act="submit" data-form="cp">Valider mes réponses</button>
            <p class="small muted center">Le nom de famille suffit. Les accents ne comptent pas.</p>`;
     } else {
+      cue(`cp-${v.n}-${v.deadline}`, v.myFound > 0 ? 'correct' : 'wrong');
       foot = `<div class="card soft center"><div class="big">+${v.myFound} point${v.myFound > 1 ? 's' : ''}</div></div>
         <div class="card"><h3>Top 5</h3>${ranking(v.top)}</div>`;
     }

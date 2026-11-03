@@ -1,5 +1,5 @@
 (function () {
-  const { esc, attr, timer, waitingNote, avatar } = UI;
+  const { esc, attr, timer, waitingNote, avatar, cue } = UI;
 
   Games.anecdotes = function (v, S) {
     const head = `<div class="row between small muted"><span>${v.n ? `Anecdote ${v.n}/${v.total}` : 'Écriture'}</span><span>⭐ ${v.myScore}</span></div>`;
@@ -28,6 +28,7 @@
       return `${quote}<h3>Qui a écrit ça ?</h3><div class="names">${v.candidates.map(c => `<button class="btn ${v.myGuess === c.id ? 'selected' : ''}"
         data-act="guess" data-arg='${attr({ target: c.id })}'>${avatar(c.name)}${esc(c.name)}</button>`).join('')}</div>${waitingNote(v.guessCount, v.candidates.length, 'ont voté')}`;
     }
+    cue(`an-${v.n}-${v.deadline}`, v.isAuthor ? 'reveal' : v.right ? 'correct' : v.myGuess ? 'wrong' : 'timeout');
     return `${quote}<div class="card blue banner"><div class="small muted">C'était…</div><div style="margin:10px 0 6px">${avatar(v.author, 'lg')}</div><div class="big">${esc(v.author)}</div>
       <p>${v.found} personne${v.found > 1 ? 's ont' : ' a'} trouvé</p>
       ${v.isAuthor ? '<p><b>+1 pt par personne qui s\'est trompée</b></p>' : `<p class="big">${v.right ? '✅ +2' : v.myGuess ? '❌' : '⌛'}</p>`}</div>`;

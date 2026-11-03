@@ -1,5 +1,6 @@
 (function () {
-  const { esc, attr, timer, waitingNote, avatar } = UI;
+  const { esc, attr, timer, waitingNote, avatar, cue } = UI;
+  const PHASE_SOUND = { word: 'reveal', reveal: 'reveal', white: 'gavel', end: 'fanfare' };
   const ROLE = { civil: '😇 Civil', under: '🕵️ Undercover', white: '👻 Mr White' };
 
   function overview(v) {
@@ -23,6 +24,7 @@
 
   Games.undercover = function (v) {
     let main = wordCard(v);
+    if (PHASE_SOUND[v.phase]) cue(`uc-${v.table}-${v.phase}-${v.round}-${v.deadline}`, PHASE_SOUND[v.phase]);
     if (v.phase === 'word') {
       main += '<div class="card soft center"><p><b>Mémorise ton mot.</b> Tu ne sais pas si tu es civil ou undercover !</p></div>';
     }

@@ -1,5 +1,5 @@
 (function () {
-  const { esc, attr, timer, waitingNote, ranking } = UI;
+  const { esc, attr, timer, waitingNote, ranking, cue } = UI;
   const LETTERS = ['A', 'B', 'C', 'D'];
 
   Games.quiz = function (v) {
@@ -21,6 +21,7 @@
       foot += waitingNote(v.answered, v.players);
     } else {
       const ok = v.my === v.correct;
+      cue(`quiz-${v.n}-${v.deadline}`, v.my == null ? 'timeout' : ok ? 'correct' : 'wrong');
       foot = `<div class="card ${ok ? 'soft' : ''} center">
           <div class="big">${v.my == null ? '⌛ Trop tard' : ok ? `✅ +${v.myPts}` : '❌ Raté'}</div>
           <p class="muted">Tu es ${v.myRank}${v.myRank === 1 ? 'er' : 'e'}</p></div>

@@ -1,10 +1,12 @@
 (function () {
-  const { esc, attr, timer, ranking } = UI;
+  const { esc, attr, timer, ranking, cue } = UI;
 
   Games.petitbac = function (v) {
     const head = `<div class="card blue center"><div class="small muted">Manche ${v.round}/${v.rounds} · ⭐ ${v.myScore}</div>
       <div class="huge">${esc(v.letter)}</div>${timer(v.deadline)}</div>`;
 
+    if (v.phase === 'stop') cue(`pb-stop-${v.round}-${v.deadline}`, 'stop');
+    if (v.phase === 'validate') cue(`pb-val-${v.round}-${v.deadline}`, 'gavel');
     if (v.phase === 'write' || v.phase === 'stop') {
       const fields = v.cats.map((c, i) => `<label class="field"><span>${esc(c)}</span>
         <input type="text" name="cat-${i}" data-in="pb" data-live="draft" data-keep="pb-${v.round}-${i}"
@@ -26,6 +28,7 @@
     if (v.phase === 'validate') {
       return `${head}<div class="card soft"><b>Vérification</b><p class="small">Appuie sur 👎 pour refuser une réponse bidon. Refusée si plus de la moitié des joueurs votent contre.</p></div>${table}`;
     }
+    cue(`pb-res-${v.round}-${v.deadline}`, v.roundPts > 0 ? 'correct' : 'timeout');
     return `${head}<div class="card soft center"><div class="big">+${v.roundPts} pts</div>
       <p class="small muted">10 pts si tu es seul à avoir trouvé, 5 pts si d'autres ont le même mot.</p></div>
       <div class="card"><h3>Top 5</h3>${ranking(v.top)}</div>${table}`;

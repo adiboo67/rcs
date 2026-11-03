@@ -71,7 +71,12 @@
     return `<span class="gico ${size || ''}" style="${gameVars(key)}">${icon}</span>`;
   }
 
-  window.UI = { esc, attr, timer, medal, waitingNote, ranking, avatar, gameIcon, Local, rerender: () => render(true), serverNow, send };
+  // Effets sonores (public/js/sound.js). Les jeux appellent UI.cue(clé unique, son).
+  const SFX = window.SFX || { play() {}, cue() {}, isMuted: () => true, toggle() {} };
+  const sfx = name => SFX.play(name);
+  const cue = (key, name) => SFX.cue(key, name);
+
+  window.UI = { esc, attr, timer, medal, waitingNote, ranking, avatar, gameIcon, Local, rerender: () => render(true), serverNow, send, sfx, cue };
   window.Games = window.Games || {};
 
   // ---------- Connexion ----------
@@ -107,6 +112,7 @@
   function toast(msg) {
     toastEl.textContent = msg;
     toastEl.hidden = false;
+    sfx('ping');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => { toastEl.hidden = true; }, 2800);
   }
@@ -143,6 +149,7 @@
     try { arg = el.dataset.arg ? JSON.parse(el.dataset.arg) : {}; } catch (err) { arg = {}; }
     const data = Object.assign({}, el.dataset.form ? collect(el.dataset.form) : {}, arg);
     if (navigator.vibrate) { try { navigator.vibrate(12); } catch (err) { /* ignoré */ } }
+    if (el.dataset.local !== 'toggleSound') sfx('tap');
     if (el.dataset.local) {
       const fn = Local[el.dataset.local];
       if (typeof fn === 'function') fn(data, el);
@@ -199,8 +206,13 @@
   function renderStatus() {
     const dot = `<span class="dot ${connected ? '' : 'off'}" title="${connected ? 'Connecté' : 'Reconnexion…'}"></span>`;
     if (!S || !S.me) { statusEl.innerHTML = `<span class="chip">${dot}${connected ? 'En ligne' : 'Hors ligne'}</span>`; return; }
-    statusEl.innerHTML = `<span class="chip">${dot}${S.online} 👥</span><span class="chip score">⭐ ${S.me.score}</span>`;
+    statusEl.innerHTML = `${soundBtn()}<span class="chip">${dot}${S.online} 👥</span><span class="chip score">⭐ ${S.me.score}</span>`;
   }
+  function soundBtn() {
+    const off = SFX.isMuted();
+    return `<button class="chip sound" data-local="toggleSound" aria-label="${off ? 'Activer le son' : 'Couper le son'}">${off ? '🔇' : '🔊'}</button>`;
+  }
+  Local.toggleSound = () => SFX.toggle();
 
   // Rejoue les animations d'entrée seulement quand on change d'écran
   // (nouveau jeu, nouvelle phase, nouvelle question), pas à chaque vote reçu.
@@ -216,14 +228,17 @@
   function markScreen() {
     const k = screenKey();
     if (k === lastScreen) return;
+    const head = lastScreen.split('|')[0];
+    const wasGame = !!head && !['hub', 'join', 'load'].includes(head);
     lastScreen = k;
+    if (S && S.game) sfx(wasGame ? 'whoosh' : 'start');
     app.classList.remove('enter');
     void app.offsetWidth;
     app.classList.add('enter');
     clearTimeout(enterTimer);
     enterTimer = setTimeout(() => app.classList.remove('enter'), 900);
     const r = S && !S.game && S.lastResult;
-    if (r && r.at !== lastConfetti && serverNow() - r.at < 60000) { lastConfetti = r.at; confetti(); }
+    if (r && r.at !== lastConfetti && serverNow() - r.at < 60000) { lastConfetti = r.at; confetti(); sfx('fanfare'); }
   }
   let lastConfetti = null;
   function confetti() {
@@ -262,6 +277,12 @@
       el.textContent = Math.ceil(left / 1000) + ' s';
       el.classList.toggle('low', left < 5000);
     });
+    // Tic-tac des 5 dernières secondes, seulement s'il reste quelque chose à faire.
+    const cd = document.querySelector('[data-cd]');
+    if (cd && app.querySelector('[data-act]:not([disabled]), [data-local^="uno"], input[data-in], textarea[data-in]')) {
+      const secs = Math.ceil((Number(cd.dataset.cd) - now) / 1000);
+      if (secs >= 1 && secs <= 5) cue(`cd-${cd.dataset.cd}-${secs}`, secs === 1 ? 'tickLast' : 'tick');
+    }
     document.querySelectorAll('[data-bar]').forEach(el => {
       const d = Number(el.dataset.bar);
       const left = Math.max(0, d - now);

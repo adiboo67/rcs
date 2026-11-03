@@ -1,5 +1,5 @@
 (function () {
-  const { esc, attr, timer } = UI;
+  const { esc, attr, timer, cue } = UI;
   const DIR = { L: '⬅️', C: '⬆️', R: '➡️' };
   const DIR_NAME = { L: 'Gauche', C: 'Centre', R: 'Droite' };
 
@@ -17,6 +17,7 @@
   }
 
   Games.tirs = function (v) {
+    if (v.phase === 'champion') cue(`tirs-champ-${v.deadline}`, 'fanfare');
     if (v.phase === 'champion') {
       return `<div class="card blue banner"><div class="emoji">🏆</div><h2>${esc(v.champion)}</h2><p>Champion des tirs au but !</p>${timer(v.deadline)}</div>${duelsList(v)}`;
     }
@@ -36,6 +37,7 @@
 
     let action = '';
     if (d.phase === 'choose') {
+      if (d.role && !d.chosen) cue(`tirs-turn-${d.deadline}`, 'turn');
       if (d.role) {
         const shooter = d.role === 'shooter';
         action = `<div class="card blue center"><h2>${shooter ? '⚽ Tu tires !' : '🧤 Tu es dans les cages !'}</h2>
@@ -45,6 +47,7 @@
       }
     } else if (d.phase === 'show' && d.last) {
       const l = d.last;
+      cue(`tirs-show-${d.deadline}`, l.goal ? 'goal' : 'save');
       action = `<div class="card blue center"><div class="goal-wrap"><div class="goal"><span>${l.shot === 'L' ? '⚽' : ''}${l.dive === 'L' ? '🧤' : ''}</span>
         <span>${l.shot === 'C' ? '⚽' : ''}${l.dive === 'C' ? '🧤' : ''}</span><span>${l.shot === 'R' ? '⚽' : ''}${l.dive === 'R' ? '🧤' : ''}</span></div></div>
         <div class="huge" style="margin-top:12px">${l.goal ? 'BUT ! 🎉' : 'ARRÊT ! 🧤'}</div>

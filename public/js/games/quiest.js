@@ -1,5 +1,5 @@
 (function () {
-  const { esc, attr, timer, waitingNote, avatar } = UI;
+  const { esc, attr, timer, waitingNote, avatar, cue } = UI;
 
   Games.quiest = function (v) {
     const head = `<div class="card blue"><div class="row between small muted"><span>Question ${v.n}/${v.total}</span><span>⭐ ${v.myScore}</span></div>
@@ -10,6 +10,7 @@
           data-act="vote" data-arg='${attr({ target: c.id })}'>${avatar(c.name)}${esc(c.name)}</button>`).join('')}</div>
         ${waitingNote(v.voted, v.players, 'ont voté')}`;
     }
+    cue(`qi-${v.n}-${v.deadline}`, v.gotIt ? 'correct' : v.my ? 'wrong' : 'timeout');
     const max = v.top.length ? v.top[0].n : 1;
     return `${head}<div class="card"><h3>Le vestiaire a parlé 🗳️</h3>
       <div class="bars">${v.top.map((t, i) => `<div class="bar"><div class="fill" style="width:${Math.max(35, (t.n / max) * 100)}%">
