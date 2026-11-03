@@ -25,8 +25,6 @@ const GAME_BY_KEY = Object.fromEntries(GAMES.map(g => [g.key, g]));
 const RANK_POINTS = [30, 25, 21, 18, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6];
 const MIN_POINTS = 5;
 
-const CAMPS = { joueurs: 'Joueurs', dirigeants: 'Dirigeants' };
-
 // ---------- État persistant ----------
 
 let state = { players: {}, history: [], lastResult: null, store: {} };
@@ -58,7 +56,6 @@ function makeCtx(key) {
   const ctx = {
     now: () => Date.now(),
     name: pid => (state.players[pid] ? state.players[pid].name : '?'),
-    camp: pid => (state.players[pid] ? state.players[pid].camp : null),
     isConnected: pid => !!(state.players[pid] && state.players[pid].connected),
     connectedIds: ids => ids.filter(id => ctx.isConnected(id)),
     store: state.store,
@@ -146,7 +143,7 @@ function awardByRanking(ranking) {
     const pts = RANK_POINTS[rank] != null ? RANK_POINTS[rank] : MIN_POINTS;
     const p = state.players[r.pid];
     p.score += pts;
-    rows.push({ pid: r.pid, name: p.name, camp: p.camp, place: rank + 1, score: r.score, pts });
+    rows.push({ pid: r.pid, name: p.name, place: rank + 1, score: r.score, pts });
   });
   return rows;
 }
@@ -170,16 +167,10 @@ function broadcast() {
 function commonView() {
   const players = Object.values(state.players);
   const scoreboard = players
-    .map(p => ({ id: p.id, name: p.name, camp: p.camp, score: p.score, connected: p.connected }))
+    .map(p => ({ id: p.id, name: p.name, score: p.score, connected: p.connected }))
     .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
-  const camps = {};
-  for (const [k, label] of Object.entries(CAMPS)) {
-    const members = players.filter(p => p.camp === k);
-    const total = members.reduce((s, p) => s + p.score, 0);
-    camps[k] = { label, n: members.length, total, avg: members.length ? Math.round(total / members.length) : 0 };
-  }
   const catalog = GAMES.map(g => ({ key: g.key, name: g.name, icon: g.icon, desc: g.desc, min: g.min || 1, options: g.options || [] }));
-  return { scoreboard, camps, catalog, history: state.history.slice(-12), lastResult: state.lastResult };
+  return { scoreboard, catalog, history: state.history.slice(-12), lastResult: state.lastResult };
 }
 
 function viewFor(pid, common) {
@@ -197,7 +188,7 @@ function viewFor(pid, common) {
   }
   return {
     now: Date.now(),
-    me: { id: p.id, name: p.name, camp: p.camp, score: p.score, isHost: !!p.isHost },
+    me: { id: p.id, name: p.name, score: p.score, isHost: !!p.isHost },
     online: Object.values(state.players).filter(x => x.connected).length,
     game,
     ...common,
@@ -251,7 +242,7 @@ server.io.on('connection', socket => {
     else socket.emit('need_join');
   });
 
-  socket.on('join', ({ name, camp, pin } = {}) => {
+  socket.on('join', ({ name, pin } = {}) => {
     const clean = cleanName(name);
     if (clean.length < 2) return socket.emit('toast', 'Choisis un pseudo d\'au moins 2 lettres.');
     if (pin && String(pin) !== ADMIN_PIN) return socket.emit('toast', 'Code organisateur incorrect.');
@@ -260,7 +251,6 @@ server.io.on('connection', socket => {
       id,
       token: crypto.randomBytes(16).toString('hex'),
       name: uniqueName(clean),
-      camp: CAMPS[camp] ? camp : 'joueurs',
       score: 0,
       isHost: !!pin,
       connected: true,

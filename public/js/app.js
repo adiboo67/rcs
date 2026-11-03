@@ -21,7 +21,7 @@
   let needJoin = false;
   let lastHtml = '';
   const totals = {}; // durée initiale de chaque minuteur
-  const Local = { hubTab: 'classement', joinCamp: 'joueurs' };
+  const Local = { hubTab: 'classement' };
 
   // ---------- Outils pour les jeux ----------
 
@@ -206,25 +206,18 @@
 
   // ---------- Écran d'arrivée ----------
 
-  Local.camp = d => { Local.joinCamp = d.camp; };
   Local.join = () => {
     const d = collect('join');
-    socket.emit('join', { name: d.name, camp: Local.joinCamp, pin: d.pin || undefined });
+    socket.emit('join', { name: d.name, pin: d.pin || undefined });
   };
 
   function joinHtml() {
-    const camp = Local.joinCamp;
     return `<div class="join-hero"><img src="logo.webp" alt="Logo RC Strasbourg Alsace">
         <h1>Centre de formation</h1>
         <p class="muted">RCS Alsace · 11 jeux · 1 classement</p></div>
       <div class="card">
         <label class="field"><span>Ton pseudo</span>
           <input type="text" name="name" data-in="join" data-keep="join-name" maxlength="16" autocomplete="nickname" placeholder="Ex : Yanis 10"></label>
-        <div class="field"><span>Ton camp</span>
-          <div class="seg">
-            <button class="btn ${camp === 'joueurs' ? 'selected' : ''}" data-local="camp" data-arg='{"camp":"joueurs"}'>⚽ Joueur</button>
-            <button class="btn ${camp === 'dirigeants' ? 'selected' : ''}" data-local="camp" data-arg='{"camp":"dirigeants"}'>📋 Dirigeant</button>
-          </div></div>
         <details><summary>Je suis l'organisateur</summary>
           <label class="field"><span>Code organisateur</span>
           <input type="password" name="pin" data-in="join" data-keep="join-pin" inputmode="numeric" placeholder="Code"></label></details>
@@ -258,7 +251,7 @@
     if (Local.hubTab === 'jeux') html += catalogHtml(false);
     if (Local.hubTab === 'orga' && me.isHost) html += catalogHtml(true) + adminHtml();
     html += `<div class="row between small muted" style="margin-top:20px">
-      <span>Connecté : <b>${esc(me.name)}</b> (${me.camp === 'dirigeants' ? 'Dirigeant' : 'Joueur'})</span>
+      <span>Connecté : <b>${esc(me.name)}</b></span>
       <span class="row">${me.isHost ? '<span class="pill">Organisateur</span>' : '<button class="btn sm" data-local="becomeHost">Organisateur</button>'}
       <button class="btn sm danger" data-local="leave" data-confirm="Quitter ? Tes points seront perdus.">Quitter</button></span></div>`;
     return html;
@@ -280,17 +273,9 @@
   }
 
   function standingsHtml() {
-    const { joueurs: a, dirigeants: b } = S.camps;
-    const sum = (a.avg + b.avg) || 1;
-    const pa = Math.round((a.avg / sum) * 100);
-    let html = `<div class="card"><h3>⚔️ Joueurs contre Dirigeants</h3>
-      <p class="muted small">Moyenne des points par personne dans chaque camp.</p>
-      <div class="campbar"><div class="a" style="width:${Math.max(30, Math.min(70, pa))}%">⚽ ${a.avg}</div>
-      <div class="b" style="width:${Math.max(30, Math.min(70, 100 - pa))}%">${b.avg} 📋</div></div>
-      <div class="row between small muted" style="margin-top:6px"><span>${a.n} joueurs</span><span>${b.n} dirigeants</span></div></div>`;
-    html += `<div class="card"><h3>🏆 Classement général</h3><ul class="list">${S.scoreboard.map((p, i) => `
+    let html = `<div class="card"><h3>🏆 Classement général</h3><ul class="list">${S.scoreboard.map((p, i) => `
       <li class="${p.id === S.me.id ? 'me' : ''}"><span class="rank">${medal(i + 1)}</span>
-      <span class="grow">${esc(p.name)} <span class="small muted">${p.camp === 'dirigeants' ? '📋' : '⚽'}${p.connected ? '' : ' · 📵'}</span></span>
+      <span class="grow">${esc(p.name)}${p.connected ? '' : ' <span class="small muted">· 📵</span>'}</span>
       <span class="pts">${p.score}</span></li>`).join('')}</ul></div>`;
     if (S.history.length) {
       html += `<div class="card"><h3>📜 Jeux déjà joués</h3><ul class="list">${S.history.slice().reverse().map(h =>

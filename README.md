@@ -20,7 +20,6 @@ Aucune installation sur les téléphones : un lien (ou un QR code) suffit, sur A
 | 🔮 Pronostics | 1+ | Pari sur le prochain match du RCS Alsace, points après le match |
 
 Chaque jeu rapporte des points au **classement général** selon la place (30, 25, 21, 18…, minimum 5).
-Un tableau **Joueurs contre Dirigeants** compare la moyenne de points de chaque camp.
 
 ## Lancer en local
 
@@ -41,7 +40,7 @@ Les scores et les pronostics sont sauvegardés dans `data/state.json` : un redé
 ## Pendant le voyage
 
 1. L'organisateur ouvre le lien, choisit son pseudo et entre le code organisateur.
-2. Les autres ouvrent le même lien et choisissent pseudo + camp (Joueur ou Dirigeant).
+2. Les autres ouvrent le même lien et choisissent leur pseudo.
 3. Sur iPhone : Partager → « Sur l'écran d'accueil ». Sur Android : menu ⋮ → « Ajouter à l'écran d'accueil ».
 4. L'organisateur lance un jeu dans l'onglet « 🛠️ Lancer » : il s'affiche chez tout le monde.
 5. Boutons organisateur pendant un jeu : ⏭ Passer (étape suivante) et ⏹ Arrêter (sans points).

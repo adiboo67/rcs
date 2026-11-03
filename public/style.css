@@ -149,10 +149,6 @@ details > summary { cursor: pointer; font-weight: 700; color: var(--blue); paddi
 /* ---------- Accueil ---------- */
 .gamecard { display: flex; gap: 12px; align-items: flex-start; }
 .gamecard .ico { font-size: 2rem; line-height: 1; width: 44px; text-align: center; }
-.campbar { display: flex; height: 34px; border-radius: 12px; overflow: hidden; font-weight: 800; color: #fff; font-size: .85rem; }
-.campbar > div { display: flex; align-items: center; padding: 0 10px; white-space: nowrap; min-width: 30%; }
-.campbar .a { background: var(--blue); }
-.campbar .b { background: var(--blue-2); justify-content: flex-end; }
 .podium { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: end; gap: 8px; text-align: center; margin: 10px 0; }
 .podium .step { background: rgba(255, 255, 255, .15); border-radius: 12px 12px 0 0; padding: 8px 4px; }
 .podium .p1 { min-height: 110px; background: rgba(255, 255, 255, .28); }
