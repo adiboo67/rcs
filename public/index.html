@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#00509d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Tournoi RCS">
+  <title>Tournoi du Train — RCS Alsace</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="logo.webp" type="image/webp">
+  <link rel="apple-touch-icon" href="logo.webp">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header id="top">
+    <div class="brand">
+      <img src="logo.webp" alt="Logo RC Strasbourg Alsace" class="logo">
+      <div>
+        <div class="club">RCS Alsace</div>
+        <div class="sub">Tournoi du Train</div>
+      </div>
+    </div>
+    <div id="status"></div>
+  </header>
+  <main id="app"><div class="center muted">Connexion…</div></main>
+  <div id="toast" hidden></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/games/quiz.js"></script>
+  <script src="js/games/uno.js"></script>
+  <script src="js/games/mercato.js"></script>
+  <script src="js/games/quiest.js"></script>
+  <script src="js/games/loupgarou.js"></script>
+  <script src="js/games/undercover.js"></script>
+  <script src="js/games/petitbac.js"></script>
+  <script src="js/games/anecdotes.js"></script>
+  <script src="js/games/compos.js"></script>
+  <script src="js/games/tirs.js"></script>
+  <script src="js/games/pronostics.js"></script>
+  <script>UI.start();</script>
+</body>
+</html>
