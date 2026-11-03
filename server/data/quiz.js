@@ -1,5 +1,6 @@
 // Questions du quiz : q = question, c = choix, a = index de la bonne réponse dans c.
-module.exports = [
+// Questions écrites à la main ; quizgen.js en ajoute des centaines à partir de quizfacts.js.
+const BASE = [
   { cat: 'Coupe du monde', q: 'Qui a remporté la Coupe du monde 2018 ?', c: ['France', 'Croatie', 'Belgique', 'Angleterre'], a: 0 },
   { cat: 'Coupe du monde', q: 'Qui a remporté la Coupe du monde 2022 ?', c: ['Argentine', 'France', 'Maroc', 'Croatie'], a: 0 },
   { cat: 'Coupe du monde', q: 'Dans quel pays s\'est jouée la Coupe du monde 2022 ?', c: ['Qatar', 'Russie', 'Brésil', 'Émirats arabes unis'], a: 0 },
@@ -89,3 +90,8 @@ module.exports = [
   { cat: 'Ligue 1', q: 'Quel club a été le plus souvent champion de France ?', c: ['Paris Saint-Germain', 'Saint-Étienne', 'Olympique de Marseille', 'Olympique lyonnais'], a: 0 },
   { cat: 'Ligue 1', q: 'Combien de fois de suite Lyon a-t-il été champion de France (2002-2008) ?', c: ['7', '5', '6', '8'], a: 0 },
 ];
+
+// Écrites à la main en dernier : en cas de doublon de texte, la version écrite à la main gagne.
+const all = [...BASE, ...require('./quizgen')];
+const seen = new Set();
+module.exports = all.filter(x => !seen.has(x.q) && seen.add(x.q));
