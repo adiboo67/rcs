@@ -45,8 +45,8 @@
       }
     } else if (d.phase === 'show' && d.last) {
       const l = d.last;
-      action = `<div class="card blue center"><div class="goal"><span>${l.shot === 'L' ? '⚽' : ''}${l.dive === 'L' ? '🧤' : ''}</span>
-        <span>${l.shot === 'C' ? '⚽' : ''}${l.dive === 'C' ? '🧤' : ''}</span><span>${l.shot === 'R' ? '⚽' : ''}${l.dive === 'R' ? '🧤' : ''}</span></div>
+      action = `<div class="card blue center"><div class="goal-wrap"><div class="goal"><span>${l.shot === 'L' ? '⚽' : ''}${l.dive === 'L' ? '🧤' : ''}</span>
+        <span>${l.shot === 'C' ? '⚽' : ''}${l.dive === 'C' ? '🧤' : ''}</span><span>${l.shot === 'R' ? '⚽' : ''}${l.dive === 'R' ? '🧤' : ''}</span></div></div>
         <div class="huge" style="margin-top:12px">${l.goal ? 'BUT ! 🎉' : 'ARRÊT ! 🧤'}</div>
         <p class="small muted">${esc(l.shooter)} tire ${DIR_NAME[l.shot].toLowerCase()}, ${esc(l.keeper)} plonge ${DIR_NAME[l.dive].toLowerCase()}</p></div>`;
     }

@@ -1,10 +1,15 @@
 (function () {
-  const { esc, attr, timer, ranking, Local, send } = UI;
+  const { esc, attr, timer, ranking, avatar, Local, send } = UI;
   const SYMBOL = { skip: '⊘', rev: '⇄', '+2': '+2', wild: '★', '+4': '+4' };
   const COLOR_NAME = { r: 'Rouge', y: 'Jaune', g: 'Vert', b: 'Bleu' };
 
   function card(c, extra, attrs) {
-    return `<div class="ucard ${c.c} ${extra || ''}" ${attrs || ''}>${SYMBOL[c.v] || esc(c.v)}</div>`;
+    const sym = SYMBOL[c.v] || esc(c.v);
+    return `<div class="ucard ${c.c} ${extra || ''}" ${attrs || ''}><span class="face"></span><span class="oval"></span>
+      <span class="ix tl">${sym}</span><span class="val">${sym}</span><span class="ix br">${sym}</span></div>`;
+  }
+  function back(attrs) {
+    return `<div class="ucard back big" ${attrs || ''}><span class="face"></span><span class="oval"></span><span class="val">RCS</span></div>`;
   }
 
   Local.unoPlay = d => {
@@ -44,10 +49,10 @@
   Games.uno = function (v, S) {
     if (v.phase === 'results') return results(v, S);
     const strip = v.order.map(p => `<div class="pchip ${p.turn ? 'turn' : ''} ${p.me ? 'me' : ''}">
-      ${p.turn ? '▶ ' : ''}${esc(p.name)}${p.away ? ' 📵' : ''} <span class="n">${p.count}</span></div>`).join('');
+      ${avatar(p.name)}${esc(p.name)}${p.away ? ' 📵' : ''} <span class="n">${p.count}</span></div>`).join('');
     const dir = v.dir === 1 ? '↻' : '↺';
     const center = `<div class="uno-center">
-      <div class="ucard back big" ${v.myTurn && v.drawn == null ? 'data-act="draw" style="cursor:pointer"' : ''}>UNO</div>
+      ${back(v.myTurn && v.drawn == null ? 'data-act="draw"' : '')}
       ${card(v.top, 'big')}
       <div class="center"><span class="colordot ${v.color}"></span><div class="small muted">${COLOR_NAME[v.color]}</div><div class="big">${dir}</div></div></div>`;
 
@@ -57,7 +62,7 @@
     } else if (v.myTurn) {
       const two = v.hand.length === 2;
       actions = `<div class="card blue center"><b>À toi de jouer !</b>${timer(v.deadline)}
-        <div class="row" style="justify-content:center">
+        <div class="row" style="justify-content:center;margin-top:4px">
           ${v.drawn == null ? '<button class="btn light" data-act="draw">Piocher</button>' : '<button class="btn light" data-act="pass">Passer</button>'}
           ${two ? `<button class="btn ${Local.unoArmed ? 'ok' : 'light'}" data-local="unoToggle">${Local.unoArmed ? 'UNO ! ✅' : 'Dire UNO'}</button>` : ''}
         </div>${two && !Local.unoArmed ? '<p class="small">Il te reste 2 cartes : dis UNO avant de jouer, sinon +2 !</p>' : ''}</div>`;
@@ -77,7 +82,7 @@
 
     return `<div class="row between small muted"><span>Table ${v.table}${v.isFinale ? ' · FINALE' : ''} · manche ${v.round}</span><span>${v.hand.length} cartes</span></div>
       <div class="players-strip">${strip}</div>${center}
-      <p class="center small">${esc(v.log)}</p>${actions}
+      <p class="uno-log">${esc(v.log) || '&nbsp;'}</p><div class="uno-table-end"></div>${actions}
       <div class="hand">${hand}</div>${picker}
       <div class="spacer"></div>${v.overview.length > 1 ? overview(v) : ''}`;
   };

@@ -1,9 +1,9 @@
 (function () {
-  const { esc, attr, timer, waitingNote } = UI;
+  const { esc, attr, timer, waitingNote, avatar } = UI;
 
   function targets(list, act, selected, extra) {
     return `<div class="names">${list.map(p => `<button class="btn ${selected === p.id ? 'selected' : ''}"
-      data-act="${act}" data-arg='${attr(Object.assign({ target: p.id }, extra || {}))}'>${esc(p.name)}${p.votes ? ` <span class="pill">${p.votes}</span>` : ''}</button>`).join('')}</div>`;
+      data-act="${act}" data-arg='${attr(Object.assign({ target: p.id }, extra || {}))}'>${avatar(p.name)}${esc(p.name)}${p.votes ? ` <span class="pill">${p.votes}</span>` : ''}</button>`).join('')}</div>`;
   }
 
   function roleCard(v) {
@@ -13,7 +13,7 @@
 
   function playersCard(v) {
     return `<div class="card"><h3>Joueurs (${v.aliveCount} en vie)</h3><ul class="list">${v.players.map(p => `<li>
-      <span class="grow ${p.alive ? '' : 'strike'}">${esc(p.name)}</span>
+      ${avatar(p.name)}<span class="grow ${p.alive ? '' : 'strike'}">${esc(p.name)}</span>
       ${p.role ? `<span class="pill ${p.alive ? '' : 'bad'}">${p.emoji} ${esc(p.role)}</span>` : ''}</li>`).join('')}</ul></div>`;
   }
 

@@ -1,5 +1,5 @@
 (function () {
-  const { esc, attr, timer, waitingNote } = UI;
+  const { esc, attr, timer, waitingNote, avatar } = UI;
 
   Games.quiest = function (v) {
     const head = `<div class="card blue"><div class="row between small muted"><span>Question ${v.n}/${v.total}</span><span>⭐ ${v.myScore}</span></div>
@@ -7,7 +7,7 @@
     if (v.phase === 'vote') {
       return `${head}<p class="muted small center">Vote anonyme. Tu gagnes 1 point si tu votes comme la majorité.</p>
         <div class="names">${v.candidates.map(c => `<button class="btn ${v.my === c.id ? 'selected' : ''}"
-          data-act="vote" data-arg='${attr({ target: c.id })}'>${esc(c.name)}</button>`).join('')}</div>
+          data-act="vote" data-arg='${attr({ target: c.id })}'>${avatar(c.name)}${esc(c.name)}</button>`).join('')}</div>
         ${waitingNote(v.voted, v.players, 'ont voté')}`;
     }
     const max = v.top.length ? v.top[0].n : 1;

@@ -3,8 +3,8 @@
   "short_name": "Tournoi RCS",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#00509d",
-  "theme_color": "#00509d",
+  "background_color": "#030918",
+  "theme_color": "#030918",
   "lang": "fr",
   "icons": [
     { "src": "logo.webp", "sizes": "960x960", "type": "image/webp", "purpose": "any" }

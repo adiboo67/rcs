@@ -1,5 +1,5 @@
 (function () {
-  const { esc, attr, timer, waitingNote } = UI;
+  const { esc, attr, timer, waitingNote, avatar } = UI;
   const ROLE = { civil: '😇 Civil', under: '🕵️ Undercover', white: '👻 Mr White' };
 
   function overview(v) {
@@ -39,7 +39,7 @@
     if (v.phase === 'vote') {
       main += v.isAlive
         ? `<div class="card"><h3>Qui est l'intrus ?</h3><div class="names">${v.players.filter(p => p.alive && !p.me).map(p => `
-            <button class="btn ${v.myVote === p.id ? 'selected' : ''}" data-act="vote" data-arg='${attr({ target: p.id })}'>${esc(p.name)}</button>`).join('')}</div>
+            <button class="btn ${v.myVote === p.id ? 'selected' : ''}" data-act="vote" data-arg='${attr({ target: p.id })}'>${avatar(p.name)}${esc(p.name)}</button>`).join('')}</div>
             ${waitingNote(v.voteCount, v.aliveCount, 'ont voté')}</div>`
         : '<div class="card center muted">Tu es éliminé : regarde la suite 👀</div>';
     }
@@ -59,7 +59,7 @@
         <p class="big">+${v.myScore} pt${v.myScore > 1 ? 's' : ''}</p><p class="small muted">En attente des autres tables…</p></div>`;
     }
     const players = `<div class="card"><h3>Table ${v.table}</h3><ul class="list">${v.players.map(p => `<li>
-      <span class="grow ${p.alive ? '' : 'strike'}">${esc(p.name)}</span>${p.role ? `<span class="pill">${ROLE[p.role]}</span>` : ''}</li>`).join('')}</ul></div>`;
+      ${avatar(p.name)}<span class="grow ${p.alive ? '' : 'strike'}">${esc(p.name)}</span>${p.role ? `<span class="pill">${ROLE[p.role]}</span>` : ''}</li>`).join('')}</ul></div>`;
     return main + clues(v) + players + overview(v);
   };
   Games.undercover.spectator = overview;

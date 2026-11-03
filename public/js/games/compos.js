@@ -28,6 +28,6 @@
     }
     return `<div class="card"><div class="row between small muted"><span>Compo ${v.n}/${v.total}</span><span>⭐ ${v.myScore}</span></div>
         ${timer(v.deadline)}<h2>${esc(v.title)}</h2><p class="muted">${esc(v.sub)}</p></div>
-      <div class="pitch">${lines}</div><div class="spacer"></div>${foot}`;
+      <div class="pitch"><i class="box top"></i><i class="box bot"></i>${lines}</div><div class="spacer"></div>${foot}`;
   };
 })();

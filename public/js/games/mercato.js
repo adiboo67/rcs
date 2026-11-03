@@ -3,7 +3,7 @@
 
   Local.mercPick = d => { Local.mercLot = d.lot; };
 
-  function rating(r) { return `<span class="rating ${r >= 88 ? 'gold' : ''}">${r}</span>`; }
+  function rating(r) { return `<span class="rating ${r >= 88 ? 'gold' : r >= 80 ? 'silver' : ''}">${r}</span>`; }
 
   function squad(v) {
     if (!v.squad.length) return '';

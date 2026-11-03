@@ -27,6 +27,6 @@
         <div class="card"><h3>Top 5</h3>${ranking(v.top)}</div>`;
     }
     return `<div class="card">${head}${timer(v.deadline)}<h2>${esc(v.q)}</h2></div>
-      <div class="choices">${choices}</div><div class="spacer"></div>${foot}`;
+      <div class="choices ${reveal || v.my != null ? 'locked' : ''}">${choices}</div><div class="spacer"></div>${foot}`;
   };
 })();
