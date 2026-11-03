@@ -241,14 +241,21 @@
     if (S.lastResult) html += resultHtml(S.lastResult);
     html += `<div class="card soft center"><div class="big">⏳</div>
       <p><b>${me.isHost ? 'Choisis le prochain jeu dans l\'onglet « Lancer ».' : 'L\'organisateur va lancer le prochain jeu.'}</b></p>
-      <p class="muted small">Garde l'appli ouverte : le jeu s'affichera tout seul.</p></div>`;
+      <p class="muted small">Garde l'appli ouverte : le jeu s'affichera tout seul.</p>
+      ${me.isHost ? '' : '<button class="btn sm" data-local="becomeHost">🔑 Je suis l\'organisateur</button>'}</div>`;
     const tabs = [['classement', '🏆 Classement'], ['jeux', '🎮 Les jeux']];
     if (me.isHost) tabs.push(['orga', '🛠️ Lancer']);
     if (!tabs.some(t => t[0] === Local.hubTab)) Local.hubTab = 'classement';
     html += `<div class="seg" style="margin-bottom:14px">${tabs.map(([k, l]) =>
       `<button class="btn sm ${Local.hubTab === k ? 'selected' : ''}" data-local="tab" data-arg='${attr({ tab: k })}'>${l}</button>`).join('')}</div>`;
     if (Local.hubTab === 'classement') html += standingsHtml();
-    if (Local.hubTab === 'jeux') html += catalogHtml(false);
+    if (Local.hubTab === 'jeux') {
+      if (!me.isHost) {
+        html += `<div class="card soft center"><p class="small">Seul l'organisateur peut lancer un jeu.</p>
+          <button class="btn primary" data-local="becomeHost">🔑 Entrer le code organisateur</button></div>`;
+      }
+      html += catalogHtml(false);
+    }
     if (Local.hubTab === 'orga' && me.isHost) html += catalogHtml(true) + adminHtml();
     html += `<div class="row between small muted" style="margin-top:20px">
       <span>Connecté : <b>${esc(me.name)}</b></span>
