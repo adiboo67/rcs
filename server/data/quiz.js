@@ -87,6 +87,17 @@ const BASE = [
   { cat: 'Sélections', q: 'Quel pays surnomme-t-on « la Roja » ?', c: ['Espagne', 'Portugal', 'Belgique', 'Mexique'], a: 0 },
   { cat: 'Sélections', q: 'Quel pays surnomme-t-on « les Lions de l\'Atlas » ?', c: ['Maroc', 'Algérie', 'Tunisie', 'Sénégal'], a: 0 },
 
+  { cat: 'Racing', q: 'En quelle année le Racing a-t-il été champion de France ?', c: ['1979', '1985', '1972', '1998'], a: 0 },
+  { cat: 'Racing', q: 'Qui était l\'entraîneur du Racing champion de France en 1979 ?', c: ['Gilbert Gress', 'Arsène Wenger', 'Raymond Domenech', 'Guy Roux'], a: 0 },
+  { cat: 'Racing', q: 'Quel futur entraîneur d\'Arsenal, né à Strasbourg, a joué au Racing ?', c: ['Arsène Wenger', 'Unai Emery', 'Mikel Arteta', 'George Graham'], a: 0 },
+  { cat: 'Racing', q: 'En quelle année le Racing a-t-il été fondé ?', c: ['1906', '1932', '1920', '1899'], a: 0 },
+  { cat: 'Racing', q: 'Combien de Coupes de France le Racing a-t-il gagnées (1951, 1966, 2001) ?', c: ['3', '1', '2', '5'], a: 0 },
+  { cat: 'Racing', q: 'Contre quel club le Racing a-t-il gagné la finale de la Coupe de France 2001 ?', c: ['Amiens', 'Nantes', 'Monaco', 'Lens'], a: 0 },
+  { cat: 'Racing', q: 'Contre quel club le Racing a-t-il gagné la Coupe de la Ligue 2019 ?', c: ['EA Guingamp', 'PSG', 'Lyon', 'Bordeaux'], a: 0 },
+  { cat: 'Racing', q: 'Après la liquidation de 2011, dans quelle division le Racing est-il reparti ?', c: ['CFA 2 (5e division)', 'Ligue 2', 'National', 'District'], a: 0 },
+  { cat: 'Racing', q: 'En quelle année le Racing est-il remonté en Ligue 1 après sa renaissance ?', c: ['2017', '2014', '2019', '2021'], a: 0 },
+  { cat: 'Racing', q: 'Quelles sont les couleurs du Racing ?', c: ['Bleu et blanc', 'Rouge et blanc', 'Vert et blanc', 'Bleu et jaune'], a: 0 },
+
   { cat: 'Ligue 1', q: 'Quel club a été le plus souvent champion de France ?', c: ['Paris Saint-Germain', 'Saint-Étienne', 'Olympique de Marseille', 'Olympique lyonnais'], a: 0 },
   { cat: 'Ligue 1', q: 'Combien de fois de suite Lyon a-t-il été champion de France (2002-2008) ?', c: ['7', '5', '6', '8'], a: 0 },
 ];

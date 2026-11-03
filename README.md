@@ -7,7 +7,7 @@ Aucune installation sur les téléphones : un lien (ou un QR code) suffit, sur A
 
 | Jeu | Joueurs | Principe |
 |---|---|---|
-| ❓ Quiz foot | 1+ | 79 questions, plus on répond vite, plus on marque |
+| ❓ Quiz foot | 1+ | Plus de 1000 questions, plus on répond vite, plus on marque |
 | 🃏 Tournoi Uno | 2+ | Tables de 5, puis finale des gagnants de table |
 | 💰 Mercato | 2+ | 100 M€ pour acheter 5 stars aux enchères secrètes, puis championnat simulé |
 | 🫵 Qui dans l'équipe… ? | 3+ | Vote anonyme, point si on vote comme la majorité |
@@ -78,5 +78,5 @@ Autre hébergeur : n'importe quel hébergement **Node.js** avec un seul processu
 
 - `server/index.js` : serveur, salle unique, classement, sauvegarde.
 - `server/games/*.js` : logique de chaque jeu (le serveur décide de tout, les téléphones affichent).
-- `server/data/*.js` : questions, mots, joueurs du mercato, compositions. Facile à enrichir.
+- `server/data/*.js` : questions, mots, joueurs du mercato, compositions. `quizfacts.js` contient les palmarès d'où sont générées la plupart des questions du quiz : ajouter une ligne ajoute des questions.
 - `public/` : l'interface mobile (HTML, CSS, JavaScript sans framework).

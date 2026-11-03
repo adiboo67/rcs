@@ -15,7 +15,7 @@ const uniq = arr => [...new Set(arr)];
 
 // `wrong` : réponses fausses possibles ; on retire toujours la bonne réponse et `exclude`.
 function q(cat, question, answer, wrong, exclude) {
-  const banned = new Set([answer, ...(exclude || [])]);
+  const banned = new Set([answer, ...(exclude || [])].map(String));
   const pool = uniq(wrong.map(String)).filter(w => !banned.has(w));
   if (pool.length < 3) return null;
   return { cat, q: question, c: [String(answer), ...shuffle(pool).slice(0, 3)], a: 0 };
