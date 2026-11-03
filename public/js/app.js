@@ -235,6 +235,42 @@
   };
   Local.leave = () => { socket.emit('leave'); store.del(TOKEN_KEY); };
 
+  // ---------- Partage du lien (QR code) ----------
+
+  let share = null; // { url, svg } fourni par le serveur
+  let shareLoading = false;
+  function loadShare() {
+    if (share || shareLoading) return;
+    shareLoading = true;
+    fetch('/api/share').then(r => r.json()).then(d => { share = d; render(true); })
+      .catch(() => { share = { url: location.origin + '/', svg: null }; render(true); })
+      .finally(() => { shareLoading = false; });
+  }
+  Local.openShare = () => { Local.hubTab = 'orga'; Local.tabChosen = true; };
+  Local.copyLink = () => {
+    const url = share ? share.url : location.origin + '/';
+    const done = () => toast('Lien copié ✅');
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(url).then(done, () => window.prompt('Copie le lien :', url));
+    else window.prompt('Copie le lien :', url);
+  };
+  Local.shareLink = () => {
+    const url = share ? share.url : location.origin + '/';
+    navigator.share({ title: 'Centre de formation — RCS Alsace', text: 'Rejoins les jeux du train 🚆', url }).catch(() => { /* annulé */ });
+  };
+
+  function shareHtml() {
+    loadShare();
+    const url = share ? share.url : '';
+    return `<div class="card center"><h3>📲 Faire rejoindre les joueurs</h3>
+      <p class="muted small">Ils scannent ce QR code avec l'appareil photo de leur téléphone.</p>
+      <div class="qr">${share && share.svg ? share.svg : `<span class="muted small">${share ? 'QR code indisponible' : 'Chargement…'}</span>`}</div>
+      ${url ? `<p class="qr-url"><b>${esc(url)}</b></p>` : ''}
+      <div class="row" style="justify-content:center">
+        <button class="btn sm" data-local="copyLink">📋 Copier le lien</button>
+        ${navigator.share ? '<button class="btn sm primary" data-local="shareLink">📤 Partager</button>' : ''}
+      </div></div>`;
+  }
+
   function hubHtml() {
     const me = S.me;
     let html = '';
@@ -242,7 +278,7 @@
     html += `<div class="card soft center"><div class="big">⏳</div>
       <p><b>${me.isHost ? 'Choisis un jeu dans l\'onglet « Les jeux » et lance-le.' : 'L\'organisateur va lancer le prochain jeu.'}</b></p>
       <p class="muted small">Garde l'appli ouverte : le jeu s'affichera tout seul.</p>
-      ${me.isHost ? '' : '<button class="btn sm" data-local="becomeHost">🔑 Je suis l\'organisateur</button>'}</div>`;
+      ${me.isHost ? '<button class="btn sm" data-local="openShare">📲 QR code pour inviter</button>' : '<button class="btn sm" data-local="becomeHost">🔑 Je suis l\'organisateur</button>'}</div>`;
     const tabs = [['classement', '🏆 Classement'], ['jeux', me.isHost ? '🎮 Lancer un jeu' : '🎮 Les jeux']];
     if (me.isHost) tabs.push(['orga', '🛠️ Gérer']);
     if (me.isHost && !Local.tabChosen) Local.hubTab = 'jeux';
@@ -257,7 +293,7 @@
       }
       html += catalogHtml(me.isHost);
     }
-    if (Local.hubTab === 'orga' && me.isHost) html += adminHtml();
+    if (Local.hubTab === 'orga' && me.isHost) html += shareHtml() + adminHtml();
     html += `<div class="row between small muted" style="margin-top:20px">
       <span>Connecté : <b>${esc(me.name)}</b></span>
       <span class="row">${me.isHost ? '<span class="pill">Organisateur</span>' : '<button class="btn sm" data-local="becomeHost">Organisateur</button>'}

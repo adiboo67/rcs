@@ -5,9 +5,11 @@
 const path = require('path');
 const fs = require('fs');
 const http = require('http');
+const os = require('os');
 const crypto = require('crypto');
 const express = require('express');
 const { Server } = require('socket.io');
+const QRCode = require('qrcode');
 const { clampInt } = require('./util');
 
 const PORT = process.env.PORT || 3000;
@@ -198,8 +200,33 @@ function viewFor(pid, common) {
 // ---------- Serveur HTTP + sockets ----------
 
 const app = express();
+app.set('trust proxy', true); // Render / tunnel : garde le vrai https et le vrai domaine
 app.use(express.static(path.join(__dirname, '..', 'public'), { maxAge: 0 }));
 app.get('/health', (req, res) => res.json({ ok: true, players: Object.keys(state.players).length }));
+
+// Lien à partager (+ QR code en SVG). En local, « localhost » est remplacé par l'IP du réseau
+// pour que les téléphones branchés sur le même Wi-Fi puissent rejoindre.
+function lanAddress() {
+  for (const list of Object.values(os.networkInterfaces())) {
+    for (const i of list || []) if (i.family === 'IPv4' && !i.internal) return i.address;
+  }
+  return null;
+}
+app.get('/api/share', async (req, res) => {
+  let host = req.get('host') || `localhost:${PORT}`;
+  const [hostname, port] = host.split(':');
+  if (['localhost', '127.0.0.1', '[::1]'].includes(hostname)) {
+    const ip = lanAddress();
+    if (ip) host = ip + (port ? ':' + port : '');
+  }
+  const url = `${req.protocol}://${host}/`;
+  try {
+    const svg = await QRCode.toString(url, { type: 'svg', margin: 1, errorCorrectionLevel: 'M', color: { dark: '#00284f', light: '#ffffff' } });
+    res.json({ url, svg });
+  } catch (e) {
+    res.status(500).json({ url, svg: null });
+  }
+});
 
 const httpServer = http.createServer(app);
 const server = { io: new Server(httpServer, { pingInterval: 20000, pingTimeout: 25000 }) };
