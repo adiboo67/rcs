@@ -228,7 +228,7 @@
 
   // ---------- Accueil ----------
 
-  Local.tab = d => { Local.hubTab = d.tab; };
+  Local.tab = d => { Local.hubTab = d.tab; Local.tabChosen = true; };
   Local.becomeHost = () => {
     const pin = window.prompt('Code organisateur :');
     if (pin) socket.emit('become_host', { pin });
@@ -240,11 +240,12 @@
     let html = '';
     if (S.lastResult) html += resultHtml(S.lastResult);
     html += `<div class="card soft center"><div class="big">⏳</div>
-      <p><b>${me.isHost ? 'Choisis le prochain jeu dans l\'onglet « Lancer ».' : 'L\'organisateur va lancer le prochain jeu.'}</b></p>
+      <p><b>${me.isHost ? 'Choisis un jeu dans l\'onglet « Les jeux » et lance-le.' : 'L\'organisateur va lancer le prochain jeu.'}</b></p>
       <p class="muted small">Garde l'appli ouverte : le jeu s'affichera tout seul.</p>
       ${me.isHost ? '' : '<button class="btn sm" data-local="becomeHost">🔑 Je suis l\'organisateur</button>'}</div>`;
-    const tabs = [['classement', '🏆 Classement'], ['jeux', '🎮 Les jeux']];
-    if (me.isHost) tabs.push(['orga', '🛠️ Lancer']);
+    const tabs = [['classement', '🏆 Classement'], ['jeux', me.isHost ? '🎮 Lancer un jeu' : '🎮 Les jeux']];
+    if (me.isHost) tabs.push(['orga', '🛠️ Gérer']);
+    if (me.isHost && !Local.tabChosen) Local.hubTab = 'jeux';
     if (!tabs.some(t => t[0] === Local.hubTab)) Local.hubTab = 'classement';
     html += `<div class="seg" style="margin-bottom:14px">${tabs.map(([k, l]) =>
       `<button class="btn sm ${Local.hubTab === k ? 'selected' : ''}" data-local="tab" data-arg='${attr({ tab: k })}'>${l}</button>`).join('')}</div>`;
@@ -254,9 +255,9 @@
         html += `<div class="card soft center"><p class="small">Seul l'organisateur peut lancer un jeu.</p>
           <button class="btn primary" data-local="becomeHost">🔑 Entrer le code organisateur</button></div>`;
       }
-      html += catalogHtml(false);
+      html += catalogHtml(me.isHost);
     }
-    if (Local.hubTab === 'orga' && me.isHost) html += catalogHtml(true) + adminHtml();
+    if (Local.hubTab === 'orga' && me.isHost) html += adminHtml();
     html += `<div class="row between small muted" style="margin-top:20px">
       <span>Connecté : <b>${esc(me.name)}</b></span>
       <span class="row">${me.isHost ? '<span class="pill">Organisateur</span>' : '<button class="btn sm" data-local="becomeHost">Organisateur</button>'}

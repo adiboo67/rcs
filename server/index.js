@@ -267,7 +267,7 @@ server.io.on('connection', socket => {
     if (String(pin) !== ADMIN_PIN) return socket.emit('toast', 'Code organisateur incorrect.');
     p.isHost = true;
     save();
-    socket.emit('toast', 'Tu es organisateur : onglet « Lancer » disponible.');
+    socket.emit('toast', 'Tu es organisateur : onglet « Lancer un jeu » disponible.');
     broadcast();
   });
 
