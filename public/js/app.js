@@ -427,16 +427,41 @@
     return html;
   }
 
+  // Catégorie et durée indicative affichées sur les cartes du catalogue.
+  const GAME_META = {
+    quiz: ['Culture foot', '~10 min'], uno: ['Cartes', '~15 min'], mercato: ['Stratégie', '~15 min'],
+    quiest: ['Ambiance', '~10 min'], loupgarou: ['Bluff', '~25 min'], undercover: ['Bluff', '~15 min'],
+    petitbac: ['Rapidité', '~12 min'], anecdotes: ['Ambiance', '~15 min'], compos: ['Culture foot', '~8 min'],
+    tirs: ['Duels', '~8 min'], pronostics: ['Pronos', 'Tout le voyage'],
+  };
+
   function catalogHtml(host) {
-    return `<div class="games">${S.catalog.map(g => `<div class="card gtile ${host ? 'host' : ''}" style="${gameVars(g.key)}"><div class="gamecard">${gameIcon(g.key, g.icon, 'lg')}
-      <div class="grow"><h3>${esc(g.name)}</h3><p class="muted small" style="margin:0">${esc(g.desc)}</p>
-      <div class="meta"><span class="pill">👥 ${g.min > 1 ? g.min + ' joueurs min.' : 'Dès 1 joueur'}</span></div></div></div>
-      ${host ? `${g.options.length ? `<div class="opts">${g.options.map(o => `<label class="field"><span>${esc(o.label)}</span>
-          <input type="number" name="${o.key}" data-in="opt-${g.key}" value="${o.def}" min="${o.min}" max="${o.max}"></label>`).join('')}</div>` : '<div class="spacer"></div>'}
-        <button class="btn primary block" data-host="start" data-form="opt-${g.key}" data-arg='${attr({ key: g.key })}'
-          ${S.online < g.min ? 'disabled' : ''}>▶ Lancer pour tout le monde</button>
-        ${S.online < g.min ? `<p class="small muted center" style="margin:8px 0 0">Minimum ${g.min} joueurs connectés.</p>` : ''}` : ''}
-      </div>`).join('')}</div>`;
+    const n = S.catalog.length;
+    return `<div class="games-head"><div><div class="kicker">${host ? 'Prochain match' : 'Au programme'}</div>
+        <h2>Les jeux</h2></div><span class="pill">${n} jeux · ${S.online} en ligne</span></div>
+      <div class="games">${S.catalog.map((g, i) => {
+      const meta = GAME_META[g.key] || ['Jeu', ''];
+      const locked = S.online < g.min;
+      return `<article class="gtile ${host ? 'host' : ''} ${host && locked ? 'locked' : ''}" style="${gameVars(g.key)};--i:${i}">
+        <div class="gcover" aria-hidden="true">
+          <span class="gnum">${String(i + 1).padStart(2, '0')}</span>
+          <span class="gcat">${esc(meta[0])}</span>
+          <span class="gemoji">${g.icon}</span>
+        </div>
+        <div class="gbody">
+          <h3>${esc(g.name)}</h3>
+          <p class="gdesc">${esc(g.desc)}</p>
+          <div class="gstats">
+            <span><i>👥</i>${g.min > 1 ? g.min + '+ joueurs' : 'Dès 1 joueur'}</span>
+            ${meta[1] ? `<span><i>⏱</i>${esc(meta[1])}</span>` : ''}
+          </div>
+          ${host ? `<div class="gactions">${g.options.length ? `<div class="opts">${g.options.map(o => `<label class="field"><span>${esc(o.label)}</span>
+              <input type="number" name="${o.key}" data-in="opt-${g.key}" value="${o.def}" min="${o.min}" max="${o.max}"></label>`).join('')}</div>` : ''}
+            <button class="btn block glaunch" data-host="start" data-form="opt-${g.key}" data-arg='${attr({ key: g.key })}'
+              ${locked ? 'disabled' : ''}>${locked ? `🔒 ${g.min} joueurs connectés requis` : '▶ Lancer le jeu'}</button></div>` : ''}
+        </div>
+      </article>`;
+    }).join('')}</div>`;
   }
 
   function adminHtml() {
