@@ -1,4 +1,4 @@
-// Serveur du "Grand Tournoi du Train" — RCS Alsace.
+// Serveur du "Centre de formation" — RCS Alsace.
 // Une seule salle : tout le monde rejoint, l'organisateur lance les jeux,
 // les points de chaque jeu s'ajoutent au classement général.
 
@@ -370,5 +370,5 @@ server.io.on('connection', socket => {
 });
 
 httpServer.listen(PORT, () => {
-  console.log(`Tournoi du Train prêt sur http://localhost:${PORT} (code organisateur : ${ADMIN_PIN === '1234' ? '1234 par défaut, change-le avec ADMIN_PIN' : 'défini'})`);
+  console.log(`Centre de formation prêt sur http://localhost:${PORT} (code organisateur : ${ADMIN_PIN === '1234' ? '1234 par défaut, change-le avec ADMIN_PIN' : 'défini'})`);
 });

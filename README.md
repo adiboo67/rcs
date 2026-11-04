@@ -1,4 +1,4 @@
-# Le Grand Tournoi du Train — RCS Alsace
+# Centre de formation — RCS Alsace
 
 Application web de jeux multijoueurs en temps réel pour le voyage en train de l'équipe.
 Aucune installation sur les téléphones : un lien (ou un QR code) suffit, sur Android comme sur iPhone.

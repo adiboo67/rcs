@@ -494,7 +494,7 @@
     if ('mediaSession' in navigator && window.MediaMetadata) {
       try {
         navigator.mediaSession.metadata = new MediaMetadata({
-          title: s.name, artist: (COUNTRY_FR[s.countrycode] || s.country || 'Radio du monde') + ' · Tournoi RCS',
+          title: s.name, artist: (COUNTRY_FR[s.countrycode] || s.country || 'Radio du monde') + ' · Centre de formation',
           artwork: s.favicon ? [{ src: s.favicon, sizes: '96x96' }] : [],
         });
         navigator.mediaSession.setActionHandler('play', () => toggle());
