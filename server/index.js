@@ -11,6 +11,7 @@ const express = require('express');
 const { Server } = require('socket.io');
 const QRCode = require('qrcode');
 const { clampInt } = require('./util');
+const Videos = require('./videos');
 
 const PORT = process.env.PORT || 3000;
 const ADMIN_PIN = String(process.env.ADMIN_PIN || '1234');
@@ -29,11 +30,12 @@ const MIN_POINTS = 5;
 
 // ---------- État persistant ----------
 
-let state = { players: {}, history: [], lastResult: null, store: {} };
+let state = { players: {}, history: [], lastResult: null, store: {}, videos: [] };
 try {
   if (fs.existsSync(DATA_FILE)) {
     state = Object.assign(state, JSON.parse(fs.readFileSync(DATA_FILE, 'utf8')));
     for (const p of Object.values(state.players)) p.connected = false;
+    if (!Array.isArray(state.videos)) state.videos = [];
   }
 } catch (e) {
   console.error('Impossible de relire la sauvegarde :', e.message);
@@ -172,7 +174,7 @@ function commonView() {
     .map(p => ({ id: p.id, name: p.name, score: p.score, connected: p.connected }))
     .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
   const catalog = GAMES.map(g => ({ key: g.key, name: g.name, icon: g.icon, desc: g.desc, min: g.min || 1, options: g.options || [] }));
-  return { scoreboard, catalog, history: state.history.slice(-12), lastResult: state.lastResult };
+  return { scoreboard, catalog, history: state.history.slice(-12), lastResult: state.lastResult, videos: Videos.publicList(state.videos) };
 }
 
 function viewFor(pid, common) {
@@ -263,6 +265,8 @@ function refreshConnected(pid) {
 }
 
 server.io.on('connection', socket => {
+  Videos.attach({ socket, state, save, broadcast });
+
   socket.on('hello', ({ token } = {}) => {
     const p = token && Object.values(state.players).find(x => x.token === token);
     if (p) attach(socket, p);

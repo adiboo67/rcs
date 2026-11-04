@@ -2,6 +2,7 @@
 //  - Méditation : 3 séances de respiration guidée, en plein écran.
 //  - Réveil des yeux : saccades, poursuite en 8, vision périphérique (mains), mini-jeu « coin de l'œil ».
 //    Il tourne dans une surcouche plein écran, hors de #app, pour ne pas être effacé par les rafraîchissements.
+//  - Vidéos : sélection d'actions de joueurs + liens YouTube partagés par l'équipe (js/videos.js).
 //  - Radio du monde : stations HTTPS de l'annuaire libre Radio Browser (radio-browser.info),
 //    avec un mini-lecteur fixe qui continue de jouer pendant les jeux.
 
@@ -606,9 +607,9 @@
       </div></article>`;
   }
 
-  function tabHtml() {
+  function tabHtml(S) {
     return `<div class="games-head"><div><div class="kicker">Avant le match</div><h2>Concentration</h2></div><span class="pill">Solo · sans points</span></div>
-      <div class="games focus">${meditCardHtml()}${eyesCardHtml()}${radioHtml()}</div>`;
+      <div class="games focus">${meditCardHtml()}${eyesCardHtml()}${window.Videos ? window.Videos.cardHtml(S) : ''}${radioHtml()}</div>`;
   }
 
   // ---------- Mini-lecteur fixe ----------
@@ -636,6 +637,6 @@
   window.Focus = {
     tabHtml,
     // Un jeu démarre : on ferme l'exercice pour laisser place au jeu (la radio continue).
-    onGame() { if (E.el) closeEyes(); if (M.el) meditClose(); },
+    onGame() { if (E.el) closeEyes(); if (M.el) meditClose(); if (window.Videos) window.Videos.close(); },
   };
 })();

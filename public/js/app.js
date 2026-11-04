@@ -76,7 +76,7 @@
   const sfx = name => SFX.play(name);
   const cue = (key, name) => SFX.cue(key, name);
 
-  window.UI = { esc, attr, timer, medal, waitingNote, ranking, avatar, gameIcon, Local, rerender: () => render(true), serverNow, send, sfx, cue };
+  window.UI = { esc, attr, timer, medal, waitingNote, ranking, avatar, gameIcon, Local, rerender: () => render(true), serverNow, send, emit: (ev, data) => socket.emit(ev, data || {}), sfx, cue };
   window.Games = window.Games || {};
 
   // ---------- Connexion ----------
@@ -387,7 +387,7 @@
       }
       html += catalogHtml(me.isHost);
     }
-    if (Local.hubTab === 'focus' && window.Focus) html += window.Focus.tabHtml();
+    if (Local.hubTab === 'focus' && window.Focus) html += window.Focus.tabHtml(S);
     if (Local.hubTab === 'orga' && me.isHost) html += shareHtml() + adminHtml();
     html += `<div class="footer-me"><div class="who">${avatar(me.name)}<span>${esc(me.name)}</span>
         ${me.isHost ? '<span class="pill gold">Organisateur</span>' : ''}</div>
