@@ -266,7 +266,10 @@
       if (needJoin) return patch(joinHtml(), force);
       return patch(`<div class="card center muted">${connected ? 'Chargement…' : 'Connexion au serveur… (tunnel ?)'}</div>`, force);
     }
-    if (S.game) return patch(gameHtml(), force);
+    if (S.game) {
+      if (window.Focus) window.Focus.onGame();
+      return patch(gameHtml(), force);
+    }
     patch(hubHtml(), force);
   }
 
@@ -369,6 +372,7 @@
       <p class="muted small" style="margin:0">Garde l'appli ouverte : le jeu s'affichera tout seul.</p>
       ${me.isHost ? '<button class="btn sm" data-local="openShare">📲 QR code pour inviter</button>' : '<button class="btn sm" data-local="becomeHost">🔑 Je suis l\'organisateur</button>'}</div></div></div>`;
     const tabs = [['classement', '🏆 Classement'], ['jeux', me.isHost ? '🎮 Lancer un jeu' : '🎮 Les jeux']];
+    if (window.Focus) tabs.push(['focus', '🧠 Mental']);
     if (me.isHost) tabs.push(['orga', '🛠️ Gérer']);
     if (me.isHost && !Local.tabChosen) Local.hubTab = 'jeux';
     if (!tabs.some(t => t[0] === Local.hubTab)) Local.hubTab = 'classement';
@@ -383,6 +387,7 @@
       }
       html += catalogHtml(me.isHost);
     }
+    if (Local.hubTab === 'focus' && window.Focus) html += window.Focus.tabHtml();
     if (Local.hubTab === 'orga' && me.isHost) html += shareHtml() + adminHtml();
     html += `<div class="footer-me"><div class="who">${avatar(me.name)}<span>${esc(me.name)}</span>
         ${me.isHost ? '<span class="pill gold">Organisateur</span>' : ''}</div>
