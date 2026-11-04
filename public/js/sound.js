@@ -140,6 +140,12 @@
     stop() { tone(660, 0.12, { type: 'square', vol: 0.12, lowpass: 2000 }); tone(660, 0.12, { type: 'square', vol: 0.12, lowpass: 2000, delay: 0.16 }); whistle(0.4, 0.3); },
     night() { tone(110, 1.6, { type: 'sine', vol: 0.2, attack: 0.4 }); tone(165, 1.6, { type: 'sine', vol: 0.08, attack: 0.6 }); tone(1760, 0.8, { vol: 0.03, delay: 0.5, attack: 0.2 }); },
     dawn() { [392, 523, 659].forEach((f, i) => tone(f, 0.7, { type: 'triangle', vol: 0.1, attack: 0.15, delay: i * 0.18 })); },
+    // Bol tibétain doux : début et fin des séances de méditation.
+    bell() {
+      tone(528, 3.2, { type: 'sine', vol: 0.16, attack: 0.01 });
+      tone(1056, 2.2, { type: 'sine', vol: 0.05, attack: 0.01 });
+      tone(1584, 1.2, { type: 'sine', vol: 0.02, attack: 0.01 });
+    },
     gavel() { tone(180, 0.1, { type: 'square', to: 90, vol: 0.2, lowpass: 1200 }); noise(0.08, { freq: 1500, vol: 0.2 }); },
     fanfare() {
       const seq = [[523, 0], [659, 0.14], [784, 0.28], [1047, 0.42], [784, 0.62], [1047, 0.76]];

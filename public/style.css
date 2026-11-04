@@ -997,3 +997,57 @@ body.eyes-open #radiobar { display: none; }
 @media (max-width: 380px) {
   .seg .btn .tl { font-size: .72rem; }
 }
+
+/* ---------- Méditation ---------- */
+/* Décor de couverture : cercle qui respire */
+.gbreath {
+  position: absolute; z-index: 1; right: 18%; top: 50%; width: 74px; height: 74px; margin-top: -37px; border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, .55); background: rgba(255, 255, 255, .1);
+  animation: coverBreath 10s ease-in-out infinite;
+}
+.gbreath::after { content: ""; position: absolute; inset: -16px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .2); }
+@keyframes coverBreath { 0%, 100% { transform: scale(.7); } 40% { transform: scale(1.1); } }
+
+.msessions { display: flex; flex-direction: column; gap: 8px; margin-top: 2px; }
+.msession {
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 12px; border-radius: 16px; cursor: pointer;
+  font: inherit; text-align: left; color: var(--text);
+  background: rgba(255, 255, 255, .045); border: 1px solid var(--stroke-2);
+  transition: background .2s ease, border-color .2s ease, transform .08s ease;
+}
+.msession:hover { border-color: color-mix(in srgb, var(--a) 60%, transparent); }
+.msession:active { transform: scale(.98); background: rgba(255, 255, 255, .07); }
+.mico {
+  flex: none; width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; font-size: 1.3rem;
+  background: linear-gradient(150deg, var(--a), var(--b)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35);
+}
+.mdur {
+  flex: none; padding: 5px 10px; border-radius: 999px; font-size: .74rem; font-weight: 800; color: #fff; white-space: nowrap;
+  background: rgba(255, 255, 255, .08); border: 1px solid var(--stroke-2);
+}
+
+/* Séance en plein écran (réutilise la coque .eyes) */
+.eyes.medit {
+  background:
+    radial-gradient(700px 460px at 50% -100px, rgba(143, 139, 255, .26), transparent 65%),
+    linear-gradient(180deg, #0b0a2a, #03040f);
+}
+.medit .eyes-kicker { color: #b9b6ff; }
+.medit .eyes-progress i { background: linear-gradient(90deg, #3a2f9e, #8f8bff); }
+.medit .eyes-score { color: #b9b6ff; font-size: 1.4rem; font-variant-numeric: tabular-nums; }
+.medit .eyes-stage { background: none; border: 0; }
+.breath { position: relative; width: min(72vw, 320px); aspect-ratio: 1; display: grid; place-items: center; }
+.breath-ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  transform: scale(.5); transition-property: transform; transition-timing-function: ease-in-out;
+  background: radial-gradient(circle, rgba(143, 139, 255, .34), rgba(58, 47, 158, .2) 62%, transparent 72%);
+  border: 2px solid rgba(185, 182, 255, .55);
+}
+.breath-ring::before { content: ""; position: absolute; inset: -18px; border-radius: 50%; border: 1px solid rgba(185, 182, 255, .18); }
+.breath.in .breath-ring { transform: scale(1); }
+.breath-core { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.breath-core b { font-family: var(--font-display); font-weight: 800; font-size: 2.2rem; text-transform: uppercase; letter-spacing: .06em; color: #fff; line-height: 1; }
+.breath-core span { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: #b9b6ff; font-variant-numeric: tabular-nums; min-height: 1.5rem; }
+.eyes-hint.fade { animation: hintIn .8s ease; }
+@keyframes hintIn { from { opacity: 0; transform: translateY(6px); } }
+.msession .rtxt > span { white-space: normal; line-height: 1.35; }

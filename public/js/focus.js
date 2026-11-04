@@ -1,4 +1,5 @@
 // Onglet « Mental » : préparation avant le match.
+//  - Méditation : 3 séances de respiration guidée, en plein écran.
 //  - Réveil des yeux : saccades, poursuite en 8, vision périphérique (mains), mini-jeu « coin de l'œil ».
 //    Il tourne dans une surcouche plein écran, hors de #app, pour ne pas être effacé par les rafraîchissements.
 //  - Radio du monde : stations HTTPS de l'annuaire libre Radio Browser (radio-browser.info),
@@ -238,6 +239,144 @@
   Local.eyesPick = d => pick(Number(d.n));
 
   // =====================================================================
+  //  Méditation : 3 séances guidées (inspire 4 s / expire 6 s)
+  // =====================================================================
+
+  const IN_MS = 4000;
+  const OUT_MS = 6000;
+  const SESSIONS = {
+    respirer: { name: 'Respirer', icon: '🌬️', dur: 120000, desc: 'Juste le souffle, rien d\'autre.', cues: [] },
+    poser: {
+      name: 'Se poser', icon: '🪷', dur: 300000, desc: 'Le souffle, avec quelques repères pour relâcher le corps.',
+      cues: [[20, 'Relâche les épaules.'], [60, 'Desserre la mâchoire.'], [100, 'Écoute ton souffle, sans le forcer.'],
+        [140, 'Sens tes pieds posés au sol.'], [180, 'Une pensée arrive ? Laisse-la passer, reviens au souffle.'],
+        [225, 'Relâche le front et les yeux.'], [265, 'Profite encore de quelques respirations.']],
+    },
+    match: {
+      name: 'Avant le match', icon: '⚽', dur: 180000, desc: 'Se calmer, puis se projeter sur sa première action.',
+      cues: [[0, 'Respire calmement. Laisse le trajet derrière toi.'], [60, 'Chaque expiration fait redescendre la pression.'],
+        [120, 'Pense à ta première action du match : un contrôle propre, une passe simple.'],
+        [160, 'Tu es prêt. Garde ce calme en entrant sur le terrain.']],
+    },
+  };
+
+  const M = { el: null, key: '', timers: [], tick: 0, t0: 0, cue: -1 };
+  const $m = sel => M.el && M.el.querySelector(sel);
+  const mmss = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
+
+  function meditClear() {
+    M.timers.forEach(clearTimeout);
+    M.timers = [];
+    clearInterval(M.tick);
+  }
+  function meditOpen(key) {
+    const s = SESSIONS[key];
+    if (!s) return;
+    meditClose(true);
+    M.key = key;
+    M.el = document.createElement('div');
+    M.el.className = 'eyes medit';
+    M.el.setAttribute('role', 'dialog');
+    M.el.setAttribute('aria-label', 'Méditation : ' + s.name);
+    M.el.innerHTML = `<div class="eyes-top"><div><div class="eyes-kicker" id="mKicker">Méditation</div><div class="eyes-title">${esc(s.name)}</div></div>
+        <button class="eyes-x" data-local="meditClose" aria-label="Arrêter">✕</button></div>
+      <div class="eyes-progress"><i id="mBar"></i></div>
+      <div class="eyes-stage center" id="mStage"><div class="breath" id="mBreath"><div class="breath-ring" id="mRing"></div><div class="breath-core"><b id="mPhase">Prêt</b><span id="mSec"></span></div></div></div>
+      <div class="eyes-hint" id="mHint">${esc(s.desc)}</div>
+      <div class="eyes-actions"><div class="eyes-score" id="mLeft">${mmss(s.dur)}</div></div>`;
+    document.body.appendChild(M.el);
+    document.body.classList.add('eyes-open');
+    duckRadio(true);
+    sfx('bell');
+    M.timers.push(setTimeout(() => meditRun(s), 1800));
+  }
+  function meditRun(s) {
+    M.t0 = Date.now();
+    M.cue = -1;
+    const bar = $m('#mBar');
+    bar.style.animation = `eyesFill ${s.dur}ms linear forwards`;
+    breathe(s);
+    M.tick = setInterval(() => {
+      const t = Date.now() - M.t0;
+      $m('#mLeft').textContent = mmss(s.dur - t);
+      const i = s.cues.reduce((acc, c, k) => (t >= c[0] * 1000 ? k : acc), -1);
+      if (i !== M.cue && i >= 0) {
+        M.cue = i;
+        const h = $m('#mHint');
+        h.classList.remove('fade');
+        void h.offsetWidth;
+        h.textContent = s.cues[i][1];
+        h.classList.add('fade');
+      }
+      if (t >= s.dur) meditDone(s);
+    }, 250);
+  }
+  // Un cycle : le cercle grossit pendant l'inspiration, se vide pendant l'expiration.
+  function breathe(s) {
+    const b = $m('#mBreath');
+    const phase = (inhale, ms) => {
+      if (!M.el || Date.now() - M.t0 >= s.dur) return;
+      $m('#mRing').style.transitionDuration = ms + 'ms';
+      b.classList.toggle('in', inhale);
+      $m('#mPhase').textContent = inhale ? 'Inspire' : 'Expire';
+      const end = Date.now() + ms;
+      const sec = $m('#mSec');
+      const count = () => { if (M.el) sec.textContent = Math.max(1, Math.ceil((end - Date.now()) / 1000)); };
+      count();
+      for (let k = 1000; k < ms; k += 1000) M.timers.push(setTimeout(count, k));
+      if (inhale) vibrate(40);
+      M.timers.push(setTimeout(() => phase(!inhale, inhale ? OUT_MS : IN_MS), ms));
+    };
+    phase(true, IN_MS);
+  }
+  function meditDone(s) {
+    meditClear();
+    const b = $m('#mBreath');
+    $m('#mRing').style.transitionDuration = '1500ms';
+    b.classList.remove('in');
+    $m('#mKicker').textContent = 'Terminé';
+    $m('#mPhase').textContent = '✓';
+    $m('#mSec').textContent = '';
+    $m('#mBar').style.animation = 'none';
+    $m('#mBar').style.width = '100%';
+    $m('#mHint').textContent = M.key === 'match' ? 'Tu es prêt. Bon match !' : 'Séance terminée. Garde ce calme avec toi.';
+    M.el.querySelector('.eyes-actions').innerHTML = `<div class="row"><button class="btn grow" data-local="meditOpen" data-arg='${attr({ k: M.key })}'>↻ Refaire</button>
+      <button class="btn primary grow" data-local="meditClose">Terminer</button></div>`;
+    sfx('bell');
+    vibrate([60, 80, 60]);
+    duckRadio(false);
+  }
+  function meditClose(silent) {
+    meditClear();
+    if (M.el) {
+      M.el.remove();
+      M.el = null;
+      if (!E.el) document.body.classList.remove('eyes-open');
+      if (!silent) duckRadio(false);
+    }
+  }
+  // Pendant la séance, la radio passe en fond (sans effet sur iPhone, qui ignore le volume web).
+  function duckRadio(on) {
+    try { audio.volume = on ? 0.2 : 1; } catch (e) { /* ignoré */ }
+  }
+
+  Local.meditOpen = d => meditOpen(d.k);
+  Local.meditClose = () => meditClose();
+
+  function meditCardHtml() {
+    return `<article class="gtile ftile" style="--a:#8f8bff;--b:#3a2f9e">
+      <div class="gcover" aria-hidden="true"><span class="gcat">Calme</span><span class="gbreath"></span><span class="gemoji">🧘</span></div>
+      <div class="gbody">
+        <h3>Méditation</h3>
+        <p class="gdesc">Inspire 4 secondes, expire 6 secondes : le rythme qui fait redescendre la pression. Ferme les yeux, le téléphone vibre à chaque inspiration.</p>
+        <div class="msessions">${Object.entries(SESSIONS).map(([k, s]) => `
+          <button class="msession" data-local="meditOpen" data-arg='${attr({ k })}'>
+            <span class="mico">${s.icon}</span><span class="rtxt"><b>${esc(s.name)}</b><span>${esc(s.desc)}</span></span>
+            <span class="mdur">${s.dur / 60000} min</span></button>`).join('')}</div>
+      </div></article>`;
+  }
+
+  // =====================================================================
   //  Radio du monde
   // =====================================================================
 
@@ -469,7 +608,7 @@
 
   function tabHtml() {
     return `<div class="games-head"><div><div class="kicker">Avant le match</div><h2>Concentration</h2></div><span class="pill">Solo · sans points</span></div>
-      <div class="games focus">${eyesCardHtml()}${radioHtml()}</div>`;
+      <div class="games focus">${meditCardHtml()}${eyesCardHtml()}${radioHtml()}</div>`;
   }
 
   // ---------- Mini-lecteur fixe ----------
@@ -497,6 +636,6 @@
   window.Focus = {
     tabHtml,
     // Un jeu démarre : on ferme l'exercice pour laisser place au jeu (la radio continue).
-    onGame() { if (E.el) closeEyes(); },
+    onGame() { if (E.el) closeEyes(); if (M.el) meditClose(); },
   };
 })();
