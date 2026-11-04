@@ -305,7 +305,7 @@
   function joinHtml() {
     return `<div class="join-hero"><div class="crest"><img src="logo.webp" alt="Logo RC Strasbourg Alsace"></div>
         <div class="kicker">RCS Alsace · Centre de formation</div>
-        <h1>Centre de <span>formation</span></h1>
+        <h1>Groupe <span>U17</span></h1>
         <div class="tags"><span class="pill">🎮 11 jeux</span><span class="pill">🏆 1 classement</span><span class="pill live">Temps réel</span></div></div>
       <div class="card">
         <label class="field"><span>Ton pseudo</span>
