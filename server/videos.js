@@ -43,9 +43,11 @@ async function lookup(id) {
   }
 }
 
-function attach({ socket, state, save, broadcast }) {
+// room() renvoie l'état du salon du joueur connecté sur ce socket (ou null).
+function attach({ socket, room, save, broadcast }) {
   socket.on('video_add', async ({ url, theme } = {}) => {
-    const p = state.players[socket.data.pid];
+    const state = room();
+    const p = state && state.players[socket.data.pid];
     if (!p) return;
     const id = parseId(url);
     if (!id) return socket.emit('toast', 'Lien YouTube non reconnu.');
@@ -73,7 +75,8 @@ function attach({ socket, state, save, broadcast }) {
   });
 
   socket.on('video_del', ({ id } = {}) => {
-    const p = state.players[socket.data.pid];
+    const state = room();
+    const p = state && state.players[socket.data.pid];
     if (!p) return;
     const i = state.videos.findIndex(v => v.id === id);
     if (i < 0) return;

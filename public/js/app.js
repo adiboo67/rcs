@@ -6,6 +6,9 @@
   const statusEl = document.getElementById('status');
   const toastEl = document.getElementById('toast');
   const TOKEN_KEY = 'rcs_train_token';
+  const ROOM_KEY = 'rcs_room';
+  // Salon demandé par le lien partagé (?salle=CODE).
+  const URL_ROOM = String(new URLSearchParams(location.search).get('salle') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
   const SKIPPABLE = ['quiz', 'quiest', 'compos', 'loupgarou', 'undercover', 'petitbac', 'mercato', 'anecdotes'];
 
   const store = {
@@ -85,11 +88,11 @@
     socket = io({ transports: ['websocket', 'polling'], reconnectionDelayMax: 3000 });
     socket.on('connect', () => {
       connected = true;
-      socket.emit('hello', { token: store.get(TOKEN_KEY) });
+      socket.emit('hello', { token: store.get(TOKEN_KEY), room: URL_ROOM || undefined });
       render();
     });
     socket.on('disconnect', () => { connected = false; renderStatus(); });
-    socket.on('welcome', ({ token }) => { store.set(TOKEN_KEY, token); needJoin = false; });
+    socket.on('welcome', ({ token, room }) => { store.set(TOKEN_KEY, token); if (room) store.set(ROOM_KEY, room); needJoin = false; });
     socket.on('need_join', () => { S = null; needJoin = true; store.del(TOKEN_KEY); render(); });
     socket.on('state', st => {
       offset = st.now - Date.now();
@@ -299,22 +302,32 @@
 
   Local.join = () => {
     const d = collect('join');
-    socket.emit('join', { name: d.name, pin: d.pin || undefined });
+    socket.emit('join', { name: d.name, pin: d.pin || undefined, room: d.room || 'RCS' });
+  };
+  Local.createRoom = () => {
+    const d = collect('join');
+    socket.emit('join', { name: d.name, create: true });
   };
 
   function joinHtml() {
     return `<div class="join-hero"><div class="crest"><img src="logo.webp" alt="Logo RC Strasbourg Alsace"></div>
         <div class="kicker">RCS Alsace · Centre de formation</div>
         <h1>Groupe <span>U17</span></h1>
-        <div class="tags"><span class="pill">🎮 11 jeux</span><span class="pill">🏆 1 classement</span><span class="pill live">Temps réel</span></div></div>
+        <div class="tags"><span class="pill">🎮 12 jeux</span><span class="pill">🏆 1 classement</span><span class="pill live">Temps réel</span></div></div>
       <div class="card">
         <label class="field"><span>Ton pseudo</span>
           <input type="text" name="name" data-in="join" data-keep="join-name" maxlength="16" autocomplete="nickname" placeholder="Ex : Yanis 10"></label>
+        <label class="field"><span>Code du salon</span>
+          <input type="text" name="room" data-in="join" data-keep="join-room" maxlength="12" autocapitalize="characters" autocomplete="off"
+            value="${esc(URL_ROOM || store.get(ROOM_KEY) || 'RCS')}" placeholder="Ex : RCS" style="text-transform:uppercase"></label>
         <details><summary>Je suis l'organisateur</summary>
           <label class="field"><span>Code organisateur</span>
           <input type="password" name="pin" data-in="join" data-keep="join-pin" inputmode="numeric" placeholder="Code"></label></details>
         <div class="spacer"></div>
         <button class="btn primary block" data-local="join" data-form="join">C'est parti ! 🚆</button>
+        <div class="spacer"></div>
+        <button class="btn block" data-local="createRoom" data-form="join">➕ Créer un nouveau salon pour mon groupe</button>
+        <p class="small muted center">Tu en deviens l'organisateur et tu reçois un code à partager.</p>
       </div>`;
   }
 
@@ -332,9 +345,11 @@
   let share = null; // { url, svg } fourni par le serveur
   let shareLoading = false;
   function loadShare() {
+    if (share && share.room !== S.room) share = null;
     if (share || shareLoading) return;
     shareLoading = true;
-    fetch('/api/share').then(r => r.json()).then(d => { share = d; render(true); })
+    const room = S.room;
+    fetch('/api/share?salle=' + encodeURIComponent(room || '')).then(r => r.json()).then(d => { share = Object.assign(d, { room }); render(true); })
       .catch(() => { share = { url: location.origin + '/', svg: null }; render(true); })
       .finally(() => { shareLoading = false; });
   }
@@ -354,7 +369,8 @@
     loadShare();
     const url = share ? share.url : '';
     return `<div class="card center"><h3>📲 Faire rejoindre les joueurs</h3>
-      <p class="muted small">Ils scannent ce QR code avec l'appareil photo de leur téléphone.</p>
+      <p class="muted small">Ils scannent ce QR code avec l'appareil photo de leur téléphone,
+        ou saisissent le code du salon <b style="color:#fff;letter-spacing:.1em">${esc(S.room || '')}</b> en arrivant.</p>
       <div class="qr">${share && share.svg ? share.svg : `<span class="muted small">${share ? 'QR code indisponible' : 'Chargement…'}</span>`}</div>
       ${url ? `<p class="qr-url"><b>${esc(url)}</b></p>` : ''}
       <div class="row" style="justify-content:center">
@@ -369,7 +385,7 @@
     if (S.lastResult) html += resultHtml(S.lastResult);
     html += `<div class="card soft"><div class="waiting"><div class="radar">${me.isHost ? '🎮' : '⏳'}</div><div class="grow">
       <p style="margin-bottom:2px"><b>${me.isHost ? 'Choisis un jeu dans l\'onglet « Les jeux » et lance-le.' : 'L\'organisateur va lancer le prochain jeu.'}</b></p>
-      <p class="muted small" style="margin:0">Garde l'appli ouverte : le jeu s'affichera tout seul.</p>
+      <p class="muted small" style="margin:0">Garde l'appli ouverte : le jeu s'affichera tout seul. · Salon <b style="color:#fff;letter-spacing:.1em">${esc(S.room || '')}</b></p>
       ${me.isHost ? '<button class="btn sm" data-local="openShare">📲 QR code pour inviter</button>' : '<button class="btn sm" data-local="becomeHost">🔑 Je suis l\'organisateur</button>'}</div></div></div>`;
     const tabs = [['classement', '🏆 Classement'], ['jeux', me.isHost ? '🎮 Lancer un jeu' : '🎮 Les jeux']];
     if (window.Focus) tabs.push(['focus', '🧠 Mental']);
