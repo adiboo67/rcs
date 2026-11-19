@@ -61,7 +61,7 @@
     quiz: ['#22b4f5', '#0b5fd0'], uno: ['#ff5a63', '#b3121f'], mercato: ['#ffd24d', '#c98a00'],
     quiest: ['#ff7ac8', '#b0237a'], loupgarou: ['#9b6bff', '#4a1fb8'], undercover: ['#5b6b86', '#1c2840'],
     petitbac: ['#3ad57f', '#0f7a40'], anecdotes: ['#ff9f43', '#c4540c'], compos: ['#7ee0ff', '#1679a8'],
-    tirs: ['#2bd47d', '#0b6b3a'], pronostics: ['#c39bff', '#6a35d6'],
+    tirs: ['#2bd47d', '#0b6b3a'], pronostics: ['#c39bff', '#6a35d6'], chevaux: ['#f7c65a', '#9a5a1a'],
   };
   function gameVars(key) {
     const c = GAME_STYLE[key] || GAME_STYLE.quiz;
@@ -437,7 +437,7 @@
     quiz: ['Culture foot', '~10 min'], uno: ['Cartes', '~15 min'], mercato: ['Stratégie', '~15 min'],
     quiest: ['Ambiance', '~10 min'], loupgarou: ['Bluff', '~25 min'], undercover: ['Bluff', '~15 min'],
     petitbac: ['Rapidité', '~12 min'], anecdotes: ['Ambiance', '~15 min'], compos: ['Culture foot', '~8 min'],
-    tirs: ['Duels', '~8 min'], pronostics: ['Pronos', 'Tout le voyage'],
+    tirs: ['Duels', '~8 min'], pronostics: ['Pronos', 'Tout le voyage'], chevaux: ['Plateau', '~15 min'],
   };
 
   function catalogHtml(host) {

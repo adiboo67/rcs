@@ -20,7 +20,7 @@ const TIME_SCALE = Number(process.env.TIME_SCALE) || 1; // uniquement pour les t
 
 const GAMES = [
   'quiz', 'uno', 'mercato', 'quiest', 'loupgarou', 'undercover',
-  'petitbac', 'anecdotes', 'compos', 'tirs', 'pronostics',
+  'petitbac', 'anecdotes', 'compos', 'tirs', 'pronostics', 'chevaux',
 ].map(k => require('./games/' + k));
 const GAME_BY_KEY = Object.fromEntries(GAMES.map(g => [g.key, g]));
 
